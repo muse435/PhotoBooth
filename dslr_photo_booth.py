@@ -7,7 +7,6 @@ GPIO.setmode(GPIO.BCM)
 
 SWITCH = 26
 GPIO.setup(SWITCH,GPIO.IN, pull_up_down=GPIO.PUD_UP)
-#-GPIO.setup(SWITCH, GPIO.IN)
 #RESET = 25
 #GPIO.setup(RESET, GPIO.IN)
 
@@ -26,7 +25,6 @@ GPIO.output(READY_LED, True)
 
 
 while True:
-  
   if GPIO.input(SWITCH) == False:
     snap = 0
     for i in range(5):
