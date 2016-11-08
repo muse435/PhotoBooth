@@ -56,8 +56,8 @@ pygame.display.init()
 bigfont=pygame.font.SysFont("freeserif",300)
 #screen = pygame.display.set_mode((width,height),pygame.FULLSCREEN)#FULLSCREEN
 def GetDirectory(list):
-#get directory contents for /home/pi/PB_archive/
-list = os.listdir(dir)
+  #get directory contents for /home/pi/PB_archive/
+  list = os.listdir(dir)
 
 for file in list:
   print file
