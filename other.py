@@ -61,20 +61,19 @@ def GetDirectory(list):
 
 for file in list:
   print file
-    def BigNumber(number):
-      backgroundCenterSurface = pygame.Surface((width,height))
-      backgroundCenterSurface.fill(black)
-      screen.blit(backgroundCenterSurface,(0,0))
-      backgroundCenterSurface.set_alpha(25)
-      screen.blit(bigfont.render(number, 1, white),(200,0))
-      pygame.display.update()
-    def DrawCenterMessage(message,x,y,ss):
-
-#displays notification messages onto the screen
-ww = 0.4*ss*len(message)
-hh = ss
-xx = x-ww/2
-yy = y-hh/2
+def BigNumber(number):
+  backgroundCenterSurface = pygame.Surface((width,height))
+backgroundCenterSurface.fill(black)
+screen.blit(backgroundCenterSurface,(0,0))
+backgroundCenterSurface.set_alpha(25)
+screen.blit(bigfont.render(number, 1, white),(200,0))
+pygame.display.update()
+def DrawCenterMessage(message,x,y,ss):
+  #displays notification messages onto the screen
+  ww = 0.4*ss*len(message)
+  hh = ss
+  xx = x-ww/2
+  yy = y-hh/2
 backgroundCenterSurface = pygame.Surface((width,height))#size
 backgroundCenterSurface.fill(black)
 megafont = pygame.font.SysFont("freeserif",ss,bold=1)
