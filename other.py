@@ -62,7 +62,7 @@ def GetDirectory(list):
 for file in list:
   print file
 def BigNumber(number):
-  backgroundCenterSurface = pygame.Surface((width,height))
+backgroundCenterSurface = pygame.Surface((width,height))
 backgroundCenterSurface.fill(black)
 screen.blit(backgroundCenterSurface,(0,0))
 backgroundCenterSurface.set_alpha(25)
