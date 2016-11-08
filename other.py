@@ -58,16 +58,17 @@ bigfont=pygame.font.SysFont("freeserif",300)
 def GetDirectory(list):
 #get directory contents for /home/pi/PB_archive/
 list = os.listdir(dir)
+
 for file in list:
   print file
-def BigNumber(number):
-backgroundCenterSurface = pygame.Surface((width,height))
-backgroundCenterSurface.fill(black)
-screen.blit(backgroundCenterSurface,(0,0))
-backgroundCenterSurface.set_alpha(25)
-screen.blit(bigfont.render(number, 1, white),(200,0))
-pygame.display.update()
-def DrawCenterMessage(message,x,y,ss):
+    def BigNumber(number):
+      backgroundCenterSurface = pygame.Surface((width,height))
+      backgroundCenterSurface.fill(black)
+      screen.blit(backgroundCenterSurface,(0,0))
+      backgroundCenterSurface.set_alpha(25)
+      screen.blit(bigfont.render(number, 1, white),(200,0))
+      pygame.display.update()
+    def DrawCenterMessage(message,x,y,ss):
 
 #displays notification messages onto the screen
 ww = 0.4*ss*len(message)
