@@ -59,7 +59,7 @@ def GetDirectory(list):
 #get directory contents for /home/pi/PB_archive/
 list = os.listdir(dir)
 for file in list:
-print file
+  print file
 def BigNumber(number):
 backgroundCenterSurface = pygame.Surface((width,height))
 backgroundCenterSurface.fill(black)
