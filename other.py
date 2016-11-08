@@ -42,8 +42,8 @@ camera = picamera.PiCamera()
 camera.preview_alpha = 128
 waitforit = 200
 counter=waitforit
-dirr = "/home/pi/PB_archive/"
-allpics = os.listdir(dirr)
+dir = "/home/pi/PB_archive/"
+allpics = os.listdir(dir)
 image_count = len(allpics)
 for file in allpics:
   print file
@@ -57,7 +57,7 @@ bigfont=pygame.font.SysFont("freeserif",300)
 #screen = pygame.display.set_mode((width,height),pygame.FULLSCREEN)#FULLSCREEN
 def GetDirectory(list):
 #get directory contents for /home/pi/PB_archive/
-list = os.listdir(dirr)
+list = os.listdir(dir)
 for file in list:
 print file
 def BigNumber(number):
@@ -164,7 +164,7 @@ if (GPIO.input(SWITCH)):
     GPIO.output(BUTTON_LED, True)
 
     #update directory of image files
-    allpics=os.listdir(dirr)
+    allpics=os.listdir(dir)
     image_count = len(allpics)
     #/home/pi/PB_archive/PB_${suffix}.jpg
     else:
@@ -179,7 +179,7 @@ image = pygame.Surface((width,height))
 if (current_image<image_count):
 fname=allpics[current_image]
 #DrawCenterMessage(fname,400,70,100,350)
-magna=pygame.image.load(dirr+fname)
+magna=pygame.image.load(dir+fname)
 magna=pygame.transform.scale(magna,(width,height))
 screen.blit(magna,(0,0))
 pygame.display.update()
