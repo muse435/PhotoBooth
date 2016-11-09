@@ -1,21 +1,34 @@
 #!/bin/bash
-#copy original single photos to a backup folder
-cp /home/pi/photobooth_images/*.jpg /home/pi/PB_Originals
-#resize the images for the strip
-mogrify -resize 968x648 /home/pi/photobooth_images/*.jpg
-#stack the 4 photos in a single column
-montage /home/pi/photobooth_images/*.jpg -tile 1x4 -geometry +1+1 /home/pi/temp_montage2.jpg
-#add the label to the bottom of the strip
-montage /home/pi/temp_montage2.jpg /home/pi/photobooth_label.jpg -tile 1x2 -geometry +1+1 /home/pi/temp_montage3.jpg
-#copy the strip so that you have two next to each other
-montage /home/pi/temp_montage3.jpg /home/pi/temp_montage3.jpg -tile 2x1 -geometry +5+5 /home/pi/temp_montage4.jpg
-#copy the photo strips to a backup folder
 
-#TODO: print the strips
-#lp -d "name of printer here" /home/pi/temp_montage4.jpg
+# set defaults
+GEOMETRY=968x648
+
+# process parameters
+while getopts 'bg:' flag; do
+  case "${flag}" in
+    b) GEOMETRY=1500x1000 ;; # b for big, or high res
+    g) GEOMETRY="${OPTARG}" ;; # specify a different geometry
+    *) error "Unexpected option ${flag}"; exit 1 ;;
+  esac
+done
+
+# copy original single photos to a backup folder
+cp /home/pi/photobooth_images/*.jpg /home/pi/PB_Originals
+# resize the images for the strip
+mogrify -resize "$GEOMETRY" /home/pi/photobooth_images/*.jpg
+# stack the 4 photos in a single column
+montage /home/pi/photobooth_images/*.jpg -tile 1x4 -geometry +1+1 /home/pi/temp_montage2.jpg
+# add the label to the bottom of the strip
+montage /home/pi/temp_montage2.jpg /home/pi/photobooth_label.jpg -tile 1x2 -geometry +1+1 /home/pi/temp_montage3.jpg
+# copy the strip so that you have two next to each other
+montage /home/pi/temp_montage3.jpg /home/pi/temp_montage3.jpg -tile 2x1 -geometry +5+5 /home/pi/temp_montage4.jpg
+# copy the photo strips to a backup folder
+
+# TODO: print the strips
+# lp -d "name of printer here" /home/pi/temp_montage4.jpg
 
 suffix=$(date +%Y%m%d%H%M%S)
 cp /home/pi/temp_montage4.jpg /home/pi/PB_archive/PB_${suffix}.jpg
-#remove the temporary photos used to compile the photostrip
+# remove the temporary photos used to compile the photostrip
 rm /home/pi/photobooth_images/*.jpg
 rm /home/pi/temp*
