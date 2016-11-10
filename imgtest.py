@@ -118,6 +118,6 @@ while True:
     if GPIO.input(RESET) == False:
         terminate("Killed by Reset Switch")
     if GPIO.input(SWITCH) == False:
-        DrawCenterPhoto(1, wid2, high2, 20)
+        DrawCenterPhoto("1", wid2, high2, 20)
         time.sleep(20)
         terminate("End of test")
