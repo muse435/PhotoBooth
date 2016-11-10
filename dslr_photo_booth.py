@@ -8,8 +8,8 @@ GPIO.setwarnings(False)
 # Swithes
 SWITCH = 26 # button to initiate photos
 GPIO.setup(SWITCH,GPIO.IN, pull_up_down=GPIO.PUD_UP)
-# RESET = 25 #Button to reset
-# GPIO.setup(RESET, GPIO.IN)
+RESET = 25 #Button to reset
+GPIO.setup(RESET,GPIO.IN, pull_up_down=GPIO.PUD_UP) # Terminate
 
 # LEDs
 POSE_LED = 12 #Red
