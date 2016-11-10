@@ -88,7 +88,7 @@ def DrawCenterPhoto(pose,x,y,ss):
     #ww = 0.3*ss*len(message)
     hh = ss
     #xx = x-ww
-    xx=x
+    xx = x
     yy = y
     backGroundCenterSurface = pygame.Surface((width,height))
     backGroundCenterSurface.fill(black)
