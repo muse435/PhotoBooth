@@ -8,8 +8,8 @@ GPIO.setwarnings(False)
 # Swithes
 SWITCH = 26 # button to initiate photos
 GPIO.setup(SWITCH,GPIO.IN, pull_up_down=GPIO.PUD_UP)
-# RESET = 25 #Button to reset
-# GPIO.setup(RESET, GPIO.IN)
+RESET = 25 #Button to reset
+GPIO.setup(RESET,GPIO.IN, pull_up_down=GPIO.PUD_UP) # Terminate
 
 # LEDs
 POSE_LED = 12 #Red
@@ -101,6 +101,8 @@ def checkForKeyPress():
 DrawCenterMessage("Push The Button", wid2, high2, 70)
 
 while True:
+    if GPIO.input(RESET) == False:
+        terminate("Killed by Reset Switch")
     if GPIO.input(SWITCH) == False:
         snap = 0
         # TODO: Work on screen layout
@@ -157,5 +159,5 @@ while True:
         GPIO.output(READY_LED, True)
 
         # Temp
-        terminate("Ended at the end!")
+        #terminate("Ended at the end!")
         
