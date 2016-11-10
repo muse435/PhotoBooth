@@ -25,6 +25,7 @@ GPIO.output(READY_LED, True)
 
 # Variables
 dir = "/home/pi/PB_archive/"
+temp = "/home/pi/Pictures/temp.jpg"
 width = 768
 height = 1024
 wid2 = width/2
