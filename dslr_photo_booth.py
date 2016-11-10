@@ -148,6 +148,8 @@ while True:
             GPIO.output(POSE_LED, False)
             gpout = subprocess.check_output("gphoto2 --capture-image-and-download --filename /home/pi/photobooth_images/photobooth%Y%m%d%H%M%S.jpg", stderr=subprocess.STDOUT, shell=True)
             print(gpout)
+            DrawSinglePose(snap, temp)
+            time.sleep(2)
             if "ERROR" not in gpout:
                 snap += 1
         # Create photo strip and send it to the printer
