@@ -84,7 +84,7 @@ def DrawCenterMessage2(message,x,y,ss):
     screen.blit(BGSurface,(x-ww/2-5,y-hh/2-5))
     pygame.display.update()
     
-def DrawCenterPhoto(snap, picture):
+def DrawPose(snap, picture):
     #2:3
     backGroundCenterSurface = pygame.Surface((width,height))
     backGroundCenterSurface.fill(black)
@@ -151,7 +151,7 @@ while True:
             GPIO.output(POSE_LED, False)
             gpout = subprocess.check_output("gphoto2 --capture-image-and-download --filename /home/pi/photobooth_images/photobooth%Y%m%d%H%M%S.jpg", stderr=subprocess.STDOUT, shell=True)
             print(gpout)
-            DrawSinglePose(snap, temp)
+            DrawPose(snap, temp)
             time.sleep(2)
             if "ERROR" not in gpout:
                 snap += 1
