@@ -151,6 +151,7 @@ while True:
             GPIO.output(POSE_LED, False)
             gpout = subprocess.check_output("gphoto2 --capture-image-and-download --filename /home/pi/photobooth_images/photobooth%Y%m%d%H%M%S.jpg", stderr=subprocess.STDOUT, shell=True)
             print(gpout)
+            # TODO: Switch temp with last photo taken
             DrawPose(snap, temp)
             time.sleep(2)
             if "ERROR" not in gpout:
@@ -162,7 +163,7 @@ while True:
         GPIO.output(PRINT_LED, True)
         subprocess.call("sudo /home/pi/scripts/photobooth/assemble_and_print", shell=True)
 
-        # TODO: Work on screen layout
+        # TODO: display photo strip and "printing"
         DrawCenterMessage("Printing" ,wid2,high2+100,100)
         print("please wait while your photos print...")
         
@@ -172,6 +173,7 @@ while True:
         GPIO.output(PRINT_LED, False)
         print("ready for next round")
         GPIO.output(READY_LED, True)
+        # TODO: Start slide show with random photos
         DrawCenterMessage("Ready for next round", wid2, high2, 70)
 
         # Temp
