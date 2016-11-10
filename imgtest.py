@@ -84,7 +84,7 @@ def DrawCenterMessage2(message,x,y,ss):
     pygame.display.update()
     
 def DrawCenterPhoto(pose,x,y,ss):
-    ww = 0.3*ss*len(message)
+    #ww = 0.3*ss*len(message)
     hh = ss
     xx = x-ww
     yy = y
