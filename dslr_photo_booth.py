@@ -37,7 +37,7 @@ white = pygame.Color(255,255,255)
 black = pygame.Color(0,0,0)
 pygame.init()
 pygame.display.init()
-bigfont = pygame.font.SysFont("freeserif",300)
+bigfont = pygame.font.SysFont("freeserif",500)
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 
 allpics = os.listdir(dir)
@@ -51,12 +51,14 @@ def GetDirectory(list):
         print file
 
 # TODO: Work on screen layout
-def BigNumber(number):
+def CountDownScreen(pose, number):
     backGroundCenterSurface = pygame.Surface((width,height))
     backGroundCenterSurface.fill(black)
     screen.blit(backGroundCenterSurface,(0,0))
     backGroundCenterSurface.set_alpha(25)
     screen.blit(bigfont.render(number, 1, white),(200,0))
+    poseFont = pygame.font.SysFont("freeserif",ss,bold = 1)
+    screen.blit(poseFont.render(pose, 1, white),(800,100))
     pygame.display.update()
 
 
@@ -142,7 +144,7 @@ while True:
                 GPIO.output(POSE_LED, True)
                 time.sleep(0.5)
                 countdown = str(5-i)
-                BigNumber(countdown)
+                CountDownScreen(countdown)
             time.sleep(1)
             # TODO: Work on screen layout
             DrawCenterMessage("Snap" ,wid2,high2+100,100)
