@@ -113,6 +113,8 @@ def checkForKeyPress():
 DrawCenterMessage("Push The Button", wid2, high2, 70)
 
 while True:
+    if GPIO.input(RESET) == False:
+        terminate("Killed by Reset Switch")
     if GPIO.input(SWITCH) == False:
         snap = 0
         # TODO: Work on screen layout
