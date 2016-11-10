@@ -57,8 +57,8 @@ def CountDownScreen(pose, number):
     screen.blit(backGroundCenterSurface,(0,0))
     backGroundCenterSurface.set_alpha(25)
     screen.blit(bigfont.render(number, 1, white),(200,0))
-    poseFont = pygame.font.SysFont("freeserif",ss,bold = 1)
-    screen.blit(poseFont.render(pose, 1, white),(800,100))
+    #poseFont = pygame.font.SysFont("freeserif",ss,bold = 1)
+    #screen.blit(poseFont.render(pose, 1, white),(800,100))
     pygame.display.update()
 
 
@@ -144,7 +144,7 @@ while True:
                 GPIO.output(POSE_LED, True)
                 time.sleep(0.5)
                 countdown = str(5-i)
-                CountDownScreen(countdown)
+                CountDownScreen(poser[snap], countdown)
             time.sleep(1)
             # TODO: Work on screen layout
             DrawCenterMessage("Snap" ,wid2,high2+100,100)
