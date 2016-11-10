@@ -25,7 +25,7 @@ GPIO.output(READY_LED, True)
 
 # Variables
 dir = "/home/pi/PB_archive/"
-temp = "home/pi/temp.jpg"
+temp = "home/pi/Pictures/temp.jpg"
 width = 768
 height = 1024
 wid2 = width/2
@@ -95,8 +95,9 @@ def DrawCenterPhoto(pose,x,y,ss):
     megafont = pygame.font.SysFont("freeserif",ss,bold = 1)
     screen.blit(backGroundCenterSurface,(0,0))
     screen.blit(megafont.render(pose, 1, white),(1,1))
-    image = pygame.image.load(temp)
-    screen.blit(image,(0,0))
+    photo = pygame.image.load(temp)
+    photo = pygame.scale(photo, (wid2, high2))
+    screen.blit(photo,(0,0))
     pygame.display.update()    
 
 def terminate(Terminated):
