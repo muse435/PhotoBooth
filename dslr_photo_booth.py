@@ -172,6 +172,7 @@ while True:
         GPIO.output(PRINT_LED, False)
         print("ready for next round")
         GPIO.output(READY_LED, True)
+        DrawCenterMessage("Ready for next round", wid2, high2, 70)
 
         # Temp
         #terminate("Ended at the end!")
