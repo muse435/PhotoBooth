@@ -148,10 +148,10 @@ if (GPIO.input(SWITCH)):
     # build image and send to printer
     if (GPIO.input(14)==0):
       DrawCenterMessage("saving picture",wid2,high2-2,100)
-      subprocess.call("sudo /home/pi/scripts/photobooth/assemble_and_save", shell=True)
+      subprocess.call("/home/pi/scripts/photobooth/assemble_and_save", shell=True)
     else:
       DrawCenterMessage("printing",wid2,high2,100)
-      subprocess.call("sudo /home/pi/scripts/photobooth/assemble_and_print", shell=True)
+      subprocess.call("/home/pi/scripts/photobooth/assemble_and_print", shell=True)
     # TODO: implement a reboot button
     #if event.type == QUIT:
     # pygame.quit()
