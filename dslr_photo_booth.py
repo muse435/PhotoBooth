@@ -82,6 +82,18 @@ def DrawCenterMessage2(message,x,y,ss):
     BGSurfaceblit(letsurf,(5,5))
     screen.blit(BGSurface,(x-ww/2-5,y-hh/2-5))
     pygame.display.update()
+    
+def DrawCenterPhoto(snap, picture):
+    #2:3
+    backGroundCenterSurface = pygame.Surface((width,height))
+    backGroundCenterSurface.fill(black)
+    megafont = pygame.font.SysFont("freeserif",75,bold = 5)
+    screen.blit(backGroundCenterSurface,(0,0))
+    screen.blit(megafont.render(poser[snap], 1, white),(110,150))
+    photo = pygame.image.load(picture)
+    photo = pygame.transform.scale(photo, (690, 460))
+    screen.blit(photo,(0,400))
+    pygame.display.update() 
 
 def terminate(Terminated):
     GPIO.cleanup()
@@ -138,6 +150,8 @@ while True:
             GPIO.output(POSE_LED, False)
             gpout = subprocess.check_output("gphoto2 --capture-image-and-download --filename /home/pi/photobooth_images/photobooth%Y%m%d%H%M%S.jpg", stderr=subprocess.STDOUT, shell=True)
             print(gpout)
+            DrawSinglePose(snap, temp)
+            time.sleep(2)
             if "ERROR" not in gpout:
                 snap += 1
         # Create photo strip and send it to the printer
