@@ -10,6 +10,8 @@ SWITCH = 26 # button to initiate photos
 GPIO.setup(SWITCH,GPIO.IN, pull_up_down=GPIO.PUD_UP)
 RESET = 25 #Button to reset
 GPIO.setup(RESET,GPIO.IN, pull_up_down=GPIO.PUD_UP) # Terminate
+PRINT = 20 #
+GPIO.setup(PRINT,GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 # LEDs
 POSE_LED = 12 #Red
@@ -25,7 +27,8 @@ GPIO.output(READY_LED, True)
 
 # Variables
 dir = "/home/pi/PB_archive/"
-temp = "/home/pi/Pictures/temp.jpg"
+tempPose = "/home/pi/Pictures/tempPose.jpg"
+tempStrip = "/home/pi/Pictures/tempStrip.jpg"
 width = 768
 height = 1024
 wid2 = width/2
@@ -98,6 +101,18 @@ def DrawPose(snap, picture):
     screen.blit(photo,(0,400))
     pygame.display.update() 
 
+def DrawStrip(message, picture):
+    #2:3
+    backGroundCenterSurface = pygame.Surface((width,height))
+    backGroundCenterSurface.fill(black)
+    megafont = pygame.font.SysFont("freeserif",75,bold = 5)
+    screen.blit(backGroundCenterSurface,(0,0))
+    screen.blit(megafont.render("message", 1, white),(110,150))
+    photo = pygame.image.load(picture)
+    photo = pygame.transform.scale(photo, (690, 460))
+    screen.blit(photo,(0,400))
+    pygame.display.update() 
+    
 def terminate(Terminated):
     GPIO.cleanup()
     pygame.display.quit
@@ -154,7 +169,7 @@ while True:
             gpout = subprocess.check_output("gphoto2 --capture-image-and-download --filename /home/pi/photobooth_images/photobooth%Y%m%d%H%M%S.jpg", stderr=subprocess.STDOUT, shell=True)
             print(gpout)
             # TODO: Switch temp with last photo taken
-            DrawPose(snap, temp)
+            DrawPose(snap, tempPose)
             time.sleep(2)
             if "ERROR" not in gpout:
                 snap += 1
@@ -163,12 +178,20 @@ while True:
         DrawCenterMessage("Assembling" ,wid2,high2+100,100)
         print("Assembling the photo strip")
         GPIO.output(PRINT_LED, True)
-        subprocess.call("sudo /home/pi/scripts/photobooth/assemble_and_print", shell=True)
-
-        # TODO: display photo strip and "printing"
-        DrawCenterMessage("Printing" ,wid2,high2+100,100)
-        print("please wait while your photos print...")
         
+        if GPIO.input(PRINT) == False:
+		    subprocess.call("sudo /home/pi/scripts/photobooth/assemble_and_print", shell=True)
+		    # TODO: display photo strip and "printing"
+        	DrawCenterMessage("Printing" ,wid2,high2+100,100)
+            
+        	print("Please wait while your photos print...")
+	    else:
+		    subprocess.call("sudo /home/pi/scripts/photobooth/assemble_and_save", shell=True)
+        	# TODO: display photo strip and “Saving”
+        	DrawCenterMessage(“Saving” ,wid2,high2+100,100)
+        	print("Please wait while your photos are saved…")
+        
+        DrawStrip("Printing", tempStrip)
         # TODO: determine amount of time to compile the montage, and if printing the photo how long that will take
         # TODO: check status of printer instead of using this arbitrary wait time
         time.sleep(10)
@@ -177,7 +200,4 @@ while True:
         GPIO.output(READY_LED, True)
         # TODO: Start slide show with random photos
         DrawCenterMessage("Ready for next round", wid2, high2, 70)
-
-        # Temp
-        #terminate("Ended at the end!")
         
