@@ -7,11 +7,11 @@ GPIO.setwarnings(False)
 # GPIO
 # Swithes
 SWITCH = 26 # button to initiate photos
-GPIO.setup(SWITCH,GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(SWITCH, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 RESET = 25 #Button to reset
-GPIO.setup(RESET,GPIO.IN, pull_up_down=GPIO.PUD_UP) # Terminate
+GPIO.setup(RESET, GPIO.IN, pull_up_down=GPIO.PUD_UP) # Terminate
 PRINT = 20 #
-GPIO.setup(PRINT,GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(PRINT, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 # LEDs
 POSE_LED = 12 #Red
@@ -34,6 +34,7 @@ height = 1024
 wid2 = width/2
 high2 = height/2
 poser = ["First Pose", "Second Pose", "Third Pose", "Last Pose!"]
+timerLength = 8
 
 # pygame
 white = pygame.Color(255,255,255)
@@ -53,17 +54,16 @@ def GetDirectory(list):
     for file in list:
         print file
 
-# TODO: Work on screen layout
-def CountDownScreen(pose, number):
+def CountDownScreen(pose, timerNumber):
     backGroundCenterSurface = pygame.Surface((width,height))
     backGroundCenterSurface.fill(black)
     screen.blit(backGroundCenterSurface,(0,0))
     backGroundCenterSurface.set_alpha(25)
-    screen.blit(bigfont.render(number, 1, white),(200, 0))
-    poseFont = pygame.font.SysFont("freeserif", ss, bold = 1)
-    screen.blit(poseFont.render(pose, 1, white),(800,100))
+    screen.blit(bigfont.render(timerNumber, 1, white),(200, 300))
+    poseFont = pygame.font.SysFont("freeserif", 80, bold = 1)
+    screen.blit(poseFont.render(pose, 1, white),(120,150))
+    screen.blit(poseFont.render(pose, 1, white),(120,950))
     pygame.display.update()
-
 
 def DrawCenterMessage(message,x,y,ss):
     ww = 0.3*ss*len(message)
@@ -105,12 +105,12 @@ def DrawStrip(message, picture):
     #2:3
     backGroundCenterSurface = pygame.Surface((width,height))
     backGroundCenterSurface.fill(black)
-    megafont = pygame.font.SysFont("freeserif",75,bold = 5)
+    megafont = pygame.font.SysFont("freeserif",90,bold = 5)
     screen.blit(backGroundCenterSurface,(0,0))
-    screen.blit(megafont.render("message", 1, white),(110,150))
+    screen.blit(megafont.render(message, 1, white),(150,50))
     photo = pygame.image.load(picture)
-    photo = pygame.transform.scale(photo, (690, 460))
-    screen.blit(photo,(0,400))
+    photo = pygame.transform.scale(photo, (362, 1000))
+    screen.blit(photo,(147,200))
     pygame.display.update() 
     
 def terminate(Terminated):
@@ -146,20 +146,14 @@ while True:
     
         while snap < 4:
             pose_number = snap+1
-            DrawCenterMessage(poser[snap],wid2,high2+100,70)
-            for i in range(5):
-                GPIO.output(POSE_LED, False)
-                time.sleep(0.5)
-                GPIO.output(POSE_LED, True)
-                time.sleep(0.5)
         
-            for i in range(5):
+            for i in range(timerLength):
                 GPIO.output(POSE_LED, False)
                 time.sleep(0.5)
                 GPIO.output(POSE_LED, True)
                 time.sleep(0.5)
-                countdown = str(5-i)
-                CountDownScreen(countdown)
+                countdown = str(timerLength-i)
+                CountDownScreen(poser[snap], countdown)
             time.sleep(1)
             # TODO: Work on screen layout
             DrawCenterMessage("Snap" ,wid2,high2+100,100)
@@ -179,25 +173,24 @@ while True:
         print("Assembling the photo strip")
         GPIO.output(PRINT_LED, True)
         
-        if GPIO.input(PRINT) == False:
-		    subprocess.call("sudo /home/pi/scripts/photobooth/assemble_and_print", shell=True)
-		    # TODO: display photo strip and "printing"
-        	DrawCenterMessage("Printing" ,wid2,high2+100,100)
-            
-        	print("Please wait while your photos print...")
-	    else:
-		    subprocess.call("sudo /home/pi/scripts/photobooth/assemble_and_save", shell=True)
-        	# TODO: display photo strip and “Saving”
-        	DrawCenterMessage(“Saving” ,wid2,high2+100,100)
-        	print("Please wait while your photos are saved…")
+        if GPIO.input(PRINT) == True:
+            subprocess.call("sudo /home/pi/scripts/PhotoBooth-muse435-CountDown/assemble_and_print", shell=True)
+            print("Please wait while your photos print...")
+            DrawStrip("Printing", tempStrip)
+            # TODO: determine amount of time to compile the montage, and if printing the photo how long that will take
+            # TODO: check status of printer instead of using this arbitrary wait time
+            time.sleep(10)
+        else:
+            subprocess.call("sudo /home/pi/scripts/PhotoBooth-muse435-CountDown/assemble_and_save", shell=True)
+            # TODO: display photo strip and printing
+            print("Please wait while your photos save...")
+            DrawStrip("Saving", tempStrip)
+            time.sleep(10)
         
-        DrawStrip("Printing", tempStrip)
-        # TODO: determine amount of time to compile the montage, and if printing the photo how long that will take
-        # TODO: check status of printer instead of using this arbitrary wait time
-        time.sleep(10)
+        
         GPIO.output(PRINT_LED, False)
         print("ready for next round")
         GPIO.output(READY_LED, True)
         # TODO: Start slide show with random photos
-        DrawCenterMessage("Ready for next round", wid2, high2, 70)
-        
+        #DrawCenterMessage("Ready for next round", wid2, high2, 70)
+        terminate("end of test")
