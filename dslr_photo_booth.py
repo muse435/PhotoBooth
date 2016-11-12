@@ -27,7 +27,6 @@ GPIO.output(READY_LED, True)
 
 # Variables
 dir = "/home/pi/PB_archive/"
-tempPose = "/home/pi/Pictures/tempPose.jpg"
 tempStrip = "/home/pi/Pictures/tempStrip.jpg"
 width = 768
 height = 1024
@@ -160,10 +159,11 @@ while True:
             # Takes a photo with connected DSLR
             print("pose number %d" % pose_number)
             GPIO.output(POSE_LED, False)
-            gpout = subprocess.check_output("gphoto2 --capture-image-and-download --filename /home/pi/photobooth_images/photobooth%Y%m%d%H%M%S.jpg", stderr=subprocess.STDOUT, shell=True)
+            filepath = "/home/pi/photobooth_images/photobooth" + time.strftime("%Y%m%d%H%M%S") + ".jpg" # inject a timestamp into the filename
+            gpout = subprocess.check_output("gphoto2 --capture-image-and-download --filename " + filepath, stderr=subprocess.STDOUT, shell=True)
             print(gpout)
-            # TODO: Switch temp with last photo taken
-            DrawPose(snap, tempPose)
+
+            DrawPose(snap, filepath)
             time.sleep(2)
             if "ERROR" not in gpout:
                 snap += 1
