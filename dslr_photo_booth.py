@@ -162,7 +162,7 @@ while True:
         DrawCenterMessage("Assembling" ,wid2,high2+100,100)
         print("Assembling the photo strip")
         GPIO.output(PRINT_LED, True)
-        subprocess.call("sudo /home/pi/scripts/photobooth/assemble_and_print", shell=True)
+        subprocess.call("/home/pi/scripts/photobooth/assemble_and_print", shell=True)
 
         # TODO: display photo strip and "printing"
         DrawCenterMessage("Printing" ,wid2,high2+100,100)
