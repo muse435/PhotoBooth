@@ -174,7 +174,7 @@ while True:
         GPIO.output(PRINT_LED, True)
         
         if GPIO.input(PRINT) == True:
-            subprocess.call("sudo /home/pi/scripts/PhotoBooth-muse435-CountDown/assemble_and_print", shell=True)
+            subprocess.call("sudo /home/pi/scripts/photobooth/assemble_and_print", shell=True)
             print("Please wait while your photos print...")
             DrawStrip("Printing", tempStrip)
             # TODO: determine amount of time to compile the montage, and if printing the photo how long that will take
