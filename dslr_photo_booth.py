@@ -26,14 +26,14 @@ GPIO.output(READY_LED, True)
 
 
 # Variables
-dir = "/home/pi/PB_archive/"
+stripDir = "/home/pi/PB_archive/"
 tempStrip = "/home/pi/Pictures/tempStrip.jpg"
 width = 768
 height = 1024
 wid2 = width/2
 high2 = height/2
 poser = ["First Pose", "Second Pose", "Third Pose", "Last Pose!"]
-timerLength = 8
+timerLength = 5
 
 # pygame
 white = pygame.Color(255,255,255)
@@ -43,15 +43,6 @@ pygame.display.init()
 bigfont = pygame.font.SysFont("freeserif",500)
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 
-allpics = os.listdir(dir)
-image_count = len(allpics)
-for file in allpics:
-    print file
-
-def GetDirectory(list):
-    list = os.listdir(dir)
-    for file in list:
-        print file
 
 def CountDownScreen(pose, timerNumber):
     backGroundCenterSurface = pygame.Surface((width,height))
@@ -171,26 +162,37 @@ while True:
         # TODO: Work on screen layout
         DrawCenterMessage("Assembling" ,wid2,high2+100,100)
         print("Assembling the photo strip")
-        GPIO.output(PRINT_LED, True)
+        
         
         if GPIO.input(PRINT) == True:
-            subprocess.call("sudo /home/pi/scripts/photobooth/assemble_and_print", shell=True)
+            GPIO.output(PRINT_LED, True)
+            subprocess.call("sudo /home/pi/scripts/PhotoBooth/assemble_and_print", shell=True)
             print("Please wait while your photos print...")
-            DrawStrip("Printing", tempStrip)
+            allpics = os.listdir(stripDir)
+            imageCount = len(allpics)
+            DrawStrip("Printing", stripDir + allpics[imageCount-1])
             # TODO: determine amount of time to compile the montage, and if printing the photo how long that will take
             # TODO: check status of printer instead of using this arbitrary wait time
             time.sleep(10)
+            GPIO.output(PRINT_LED, False)
+            
         else:
-            subprocess.call("sudo /home/pi/scripts/PhotoBooth-muse435-CountDown/assemble_and_save", shell=True)
+            subprocess.call("sudo /home/pi/scripts/PhotoBooth/assemble_and_save", shell=True)
             # TODO: display photo strip and printing
             print("Please wait while your photos save...")
-            DrawStrip("Saving", tempStrip)
+            allpics = os.listdir(stripDir)
+            imageCount = len(allpics)
+            DrawStrip("Saving", stripDir + allpics[imageCount-1])
             time.sleep(10)
+
+        counter = 0
+
+        while (counter < imageCount):
+            stripSlide = allpics[counter]
+            DrawStrip("Slide Show", stripDir + allpics[counter])
+            time.sleep(2)
+            counter += 1
         
-        
-        GPIO.output(PRINT_LED, False)
         print("ready for next round")
         GPIO.output(READY_LED, True)
-        # TODO: Start slide show with random photos
-        #DrawCenterMessage("Ready for next round", wid2, high2, 70)
-        terminate("end of test")
+        DrawCenterMessage("Push The Button", wid2, high2, 70)
