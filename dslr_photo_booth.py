@@ -119,32 +119,30 @@ def checkForKeyPress():
 
 # Slide show needs to be a thread
 def SlideShow(index):
-    if index == 0
-        ready = true
+    counter = 0
+    ready = False
+    if index == 0:
+        ready = True
         DrawCenterMessage("Push The Button", wid2, high2, 70)
     index -= 1
-    counter = 0
-    while ready == false:
+    while ready == False:
         stripSlide = allpics[counter]
         DrawStrip("Slide Show", stripDir + allpics[counter])
         time.sleep(3)
         #update "ready"
-        if counter == index
+        if counter == index:
             counter = 0
-        else
+        else:
             counter += 1
         
 allpics = os.listdir(stripDir)
 random.shuffle(allpics)
 imageCount = len(allpics)
-ready = false
-
+ready = False
+#creat a thread here
+thread.start_new_thread(SlideShow, (imageCount, ))
 
 while True:
-    
-    #creat a thread here
-    thread.start_new_thread(SlideShow, (imageCount))
-
     
     if GPIO.input(RESET) == False:
         terminate("Killed by Reset Switch")
