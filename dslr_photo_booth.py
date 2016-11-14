@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import RPi.GPIO as GPIO, sys, time, os, subprocess, pygame
+import RPi.GPIO as GPIO, sys, time, os, subprocess, pygame, random, thread
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
@@ -120,7 +120,7 @@ def checkForKeyPress():
 # Slide show needs to be a thread
 def SlideShow(index):
     if index == 0
-        ready == true
+        ready = true
         DrawCenterMessage("Push The Button", wid2, high2, 70)
     index -= 1
     counter = 0
@@ -135,12 +135,17 @@ def SlideShow(index):
             counter += 1
         
 allpics = os.listdir(stripDir)
+random.shuffle(allpics)
 imageCount = len(allpics)
 ready = false
-SlideShow(imageCount)
 
 
 while True:
+    
+    #creat a thread here
+    thread.start_new_thread(SlideShow, (imageCount))
+
+    
     if GPIO.input(RESET) == False:
         terminate("Killed by Reset Switch")
     
@@ -191,6 +196,7 @@ while True:
             subprocess.call("sudo /home/pi/scripts/PhotoBooth/assemble_and_print", shell=True)
             print("Please wait while your photos print...")
             allpics = os.listdir(stripDir)
+            random.shuffle(allpics)
             imageCount = len(allpics)
             DrawStrip("Printing", stripDir + allpics[imageCount-1])
             # TODO: determine amount of time to compile the montage, and if printing the photo how long that will take
@@ -203,6 +209,7 @@ while True:
             # TODO: display photo strip and printing
             print("Please wait while your photos save...")
             allpics = os.listdir(stripDir)
+            random.shuffle(allpics)
             imageCount = len(allpics)
             DrawStrip("Saving", stripDir + allpics[imageCount-1])
             time.sleep(10)
