@@ -120,7 +120,7 @@ def checkForKeyPress():
 # Slide show needs to be a thread
 def SlideShow(index):
     counter = 0
-    ready = False
+    global ready
     if index == 0:
         ready = True
         DrawCenterMessage("Push The Button", wid2, high2, 70)
@@ -149,7 +149,7 @@ while True:
     
     if GPIO.input(SWITCH) == False:
         snap = 0
-        ready = true
+        ready = True
         # TODO: Work on screen layout
         DrawCenterMessage("Get Ready" ,wid2,high2+100,70)
         for i in range(5):
@@ -214,4 +214,5 @@ while True:
         
         print("ready for next round")
         GPIO.output(READY_LED, True)
-        DrawCenterMessage("Push The Button", wid2, high2, 70)
+        random.shuffle(allpics)
+        thread.start_new_thread(SlideShow, (imageCount, ))
