@@ -116,15 +116,37 @@ def checkForKeyPress():
             terminate("Esc button pushed")
         else:
             return None
-        
 
-DrawCenterMessage("Push The Button", wid2, high2, 70)
+# Slide show needs to be a thread
+def SlideShow(index):
+    if index == 0
+        ready == true
+        DrawCenterMessage("Push The Button", wid2, high2, 70)
+    index -= 1
+    counter = 0
+    while ready == false:
+        stripSlide = allpics[counter]
+        DrawStrip("Slide Show", stripDir + allpics[counter])
+        time.sleep(3)
+        #update "ready"
+        if counter == index
+            counter = 0
+        else
+            counter += 1
+        
+allpics = os.listdir(stripDir)
+imageCount = len(allpics)
+ready = false
+SlideShow(imageCount)
+
 
 while True:
     if GPIO.input(RESET) == False:
         terminate("Killed by Reset Switch")
+    
     if GPIO.input(SWITCH) == False:
         snap = 0
+        ready = true
         # TODO: Work on screen layout
         DrawCenterMessage("Get Ready" ,wid2,high2+100,70)
         for i in range(5):
@@ -184,14 +206,6 @@ while True:
             imageCount = len(allpics)
             DrawStrip("Saving", stripDir + allpics[imageCount-1])
             time.sleep(10)
-
-        counter = 0
-
-        while (counter < imageCount):
-            stripSlide = allpics[counter]
-            DrawStrip("Slide Show", stripDir + allpics[counter])
-            time.sleep(2)
-            counter += 1
         
         print("ready for next round")
         GPIO.output(READY_LED, True)
