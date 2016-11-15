@@ -1,5 +1,6 @@
 #!/usr/bin/python
-import RPi.GPIO as GPIO, sys, time, os, subprocess, pygame, random, thread
+import RPi.GPIO as GPIO, sys, time, os, subprocess, pygame, thread
+#import random
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
@@ -27,7 +28,8 @@ GPIO.output(READY_LED, True)
 
 # Variables
 stripDir = "/home/pi/PB_archive/"
-lastStrip = "/home/pi/Pictures/tempStrip.jpg"
+global lastStrip = "/home/pi/Pictures/tempStrip.jpg"
+global ready = False
 width = 768
 height = 1024
 wid2 = width/2
@@ -111,14 +113,14 @@ def terminate(Terminated):
     pygame.quit()
     sys.exit(Terminated)
 
-def AssembleAndSave(GEOMETRY):
+def AssembleAndSave(GEOMETRY): #bash not python
     cp /home/pi/photobooth_images/*.jpg /home/pi/PB_Originals
     mogrify -resize "$GEOMETRY" /home/pi/photobooth_images/*.jpg
     montage /home/pi/photobooth_images/*.jpg -tile 1x4 -geometry +1+1 /home/pi/temp_montage2.jpg
     montage /home/pi/temp_montage2.jpg /home/pi/photobooth_label.jpg -tile 1x2 -geometry +1+1 /home/pi/temp_montage3.jpg
-    suffix=$(date +%Y%m%d%H%M%S)
+    suffix= "date +%Y%m%d%H%M%S"
     cp /home/pi/temp_montage3.jpg /home/pi/PB_archive/PB_${suffix}.jpg
-    global lastStrip = /home/pi/PB_archive/PB_${suffix}.jpg #can I do this?
+    lastStrip = "/home/pi/PB_archive/PB_$" + {suffix} + ".jpg"
 
 
 def PrintStrip(strip):
@@ -139,7 +141,6 @@ def SlideShow(index):
     #random.shuffle(allpics)
     imageCount = len(allpics)
     counter = 0
-    global ready
     if index == 0:
         ready = True
         DrawCenterMessage("Push The Button", wid2, high2, 70)
