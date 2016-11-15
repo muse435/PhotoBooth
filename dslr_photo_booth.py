@@ -194,7 +194,6 @@ while True:
             subprocess.call("sudo /home/pi/scripts/PhotoBooth/assemble_and_print", shell=True)
             print("Please wait while your photos print...")
             allpics = os.listdir(stripDir)
-            random.shuffle(allpics)
             imageCount = len(allpics)
             DrawStrip("Printing", stripDir + allpics[imageCount-1])
             # TODO: determine amount of time to compile the montage, and if printing the photo how long that will take
@@ -207,7 +206,6 @@ while True:
             # TODO: display photo strip and printing
             print("Please wait while your photos save...")
             allpics = os.listdir(stripDir)
-            random.shuffle(allpics)
             imageCount = len(allpics)
             DrawStrip("Saving", stripDir + allpics[imageCount-1])
             time.sleep(10)
