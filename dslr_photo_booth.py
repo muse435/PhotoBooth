@@ -1,7 +1,5 @@
 #!/usr/bin/python
-import RPi.GPIO as GPIO, sys, time, os, subprocess, pygame, thread
-#import random
-from shutil import copyfile
+import RPi.GPIO as GPIO, sys, time, os, subprocess, pygame, thread, shutil, random
 
 
 GPIO.setmode(GPIO.BCM)
@@ -29,9 +27,13 @@ GPIO.output(READY_LED, True)
 
 
 # Variables
-stripDir = "/home/pi/PB_archive/"
+global stripDir = "/home/pi/PB_archive/"
 global lastStrip = "/home/pi/Pictures/tempStrip.jpg"
 global ready = False
+global snapShotDir = "/home/pi/photobooth_images/"
+global snapShotArchive = "/home/pi/PB_Originals/"
+global montageDir = "/home/pi/photobooth_montage/"
+global stripLabel = "/home/pi/photobooth_label.jpg"
 width = 768
 height = 1024
 wid2 = width/2
@@ -115,25 +117,24 @@ def terminate(Terminated):
     pygame.quit()
     sys.exit(Terminated)
 
-def AssembleAndSave(GEOMETRY): #bash not python
-    copyfile(src, dst) #needs to be finished
-    cp /home/pi/photobooth_images/*.jpg /home/pi/PB_Originals
-    mogrify -resize "$GEOMETRY" /home/pi/photobooth_images/*.jpg
-    montage /home/pi/photobooth_images/*.jpg -tile 1x4 -geometry +1+1 /home/pi/temp_montage2.jpg
-    montage /home/pi/temp_montage2.jpg /home/pi/photobooth_label.jpg -tile 1x2 -geometry +1+1 /home/pi/temp_montage3.jpg
+def AssembleAndSave(GEOMETRY, printStrip): #TODO: did i do this corectly?
+    for item in os.listdir(snapShotDir):
+        shutil.copyfile(item, snapShotArchive)
+    subprocess.call("mogrify -resize " + GEOMETRY + " /home/pi/photobooth_images/*.jpg", shell=True)
+    subprocess.call("montage" + snapShotDir + "*.jpg -tile 1x4 -geometry +1+1" + montageDir + "temp_montage2.jpg", shell=True)
+    subprocess.call("montage" + montageDir + "temp_montage2.jpg " + stripLabel + " -tile 1x2 -geometry +1+1 " + montageDir + "temp_montage3.jpg", shell=True)
     suffix= "date +%Y%m%d%H%M%S"
-    cp /home/pi/temp_montage3.jpg /home/pi/PB_archive/PB_${suffix}.jpg
-    lastStrip = "/home/pi/PB_archive/PB_$" + {suffix} + ".jpg"
-
-
-def PrintStrip(strip):
-    montage strip strip -tile 2x1 -geometry +5+5 /home/pi/temp_print.jpg
-    # lp -d "name of printer here" /home/pi/temp_print.jpg
+    shutil.copyfile(montageDir + "temp_montage3.jpg", stripDir + "PB_" + suffix + ".jpg")
+    lastStrip = stripDir + "PB_" + suffix + ".jpg"
+    if (printStrip):
+        subprocess.call("montage" + montageDir + "temp_montage3.jpg montage" + montageDir + "temp_montage3.jpg -tile 2x1 -geometry +5+5 " + montageDir + "temp_montage4.jpg", shell=True)
+        #subprocess.call("lp -d name of printer here " + montageDir + "temp_montage4.jpg", shell=True)
+        print("photo now printing")
+    RemoveTempFiles()
 
 def RemoveTempFiles():
-    os.remove()#finish
-    rm /home/pi/photobooth_images/*.jpg
-    rm /home/pi/temp*
+    os.remove(snapShotDir)
+    os.remove(montageDir)
 
 def UploadStrip():
 #TODO: find a cloud to upload to
@@ -142,7 +143,7 @@ def UploadStrip():
 
 def SlideShow(index):
     allpics = os.listdir(stripDir)
-    #random.shuffle(allpics)
+    random.shuffle(allpics)
     imageCount = len(allpics)
     counter = 0
     if index == 0:
@@ -209,7 +210,7 @@ while True:
         if GPIO.input(PRINT) == True:
             GPIO.output(PRINT_LED, True)
             print("Please wait while your photos print...")
-            AssembleAndSave(GEOMETRY)
+            AssembleAndSave(GEOMETRY, True)
             print("Photo Saved")
             DrawStrip("Printing", lastStrip)
             PrintStrip(lastStrip)
@@ -220,7 +221,7 @@ while True:
             
         else:
             print("Please wait while your photos save...")
-            AssembleAndSave(GEOMETRY)
+            AssembleAndSave(GEOMETRY, False)
             print("Photo Saved")
             DrawStrip("Saving", lastStrip)
             time.sleep(10)
