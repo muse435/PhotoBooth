@@ -1,6 +1,8 @@
 #!/usr/bin/python
 import RPi.GPIO as GPIO, sys, time, os, subprocess, pygame, thread
 #import random
+from shutil import copyfile
+
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
@@ -114,6 +116,7 @@ def terminate(Terminated):
     sys.exit(Terminated)
 
 def AssembleAndSave(GEOMETRY): #bash not python
+    copyfile(src, dst) #needs to be finished
     cp /home/pi/photobooth_images/*.jpg /home/pi/PB_Originals
     mogrify -resize "$GEOMETRY" /home/pi/photobooth_images/*.jpg
     montage /home/pi/photobooth_images/*.jpg -tile 1x4 -geometry +1+1 /home/pi/temp_montage2.jpg
@@ -128,6 +131,7 @@ def PrintStrip(strip):
     # lp -d "name of printer here" /home/pi/temp_print.jpg
 
 def RemoveTempFiles():
+    os.remove()#finish
     rm /home/pi/photobooth_images/*.jpg
     rm /home/pi/temp*
 
@@ -225,5 +229,4 @@ while True:
         print("ready for next round")
         GPIO.output(READY_LED, True)
         thread.start_new_thread(SlideShow, (imageCount, ))
-
 
