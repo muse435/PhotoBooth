@@ -27,13 +27,15 @@ GPIO.output(READY_LED, True)
 
 # Variables
 stripDir = "/home/pi/PB_archive/"
-tempStrip = "/home/pi/Pictures/tempStrip.jpg"
+lastStrip = "/home/pi/Pictures/tempStrip.jpg"
 width = 768
 height = 1024
 wid2 = width/2
 high2 = height/2
 poser = ["First Pose", "Second Pose", "Third Pose", "Last Pose!"]
 timerLength = 5
+#GEOMETRY=968x648
+GEOMETRY=484x324
 
 # pygame
 white = pygame.Color(255,255,255)
@@ -92,7 +94,6 @@ def DrawPose(snap, picture):
     pygame.display.update() 
 
 def DrawStrip(message, picture):
-    #2:3
     backGroundCenterSurface = pygame.Surface((width,height))
     backGroundCenterSurface.fill(black)
     megafont = pygame.font.SysFont("freeserif",90,bold = 5)
@@ -104,21 +105,39 @@ def DrawStrip(message, picture):
     pygame.display.update() 
     
 def terminate(Terminated):
+    RemoveTempFiles()
     GPIO.cleanup()
     pygame.display.quit
     pygame.quit()
     sys.exit(Terminated)
 
-# TODO: Impliment
-def checkForKeyPress(): 
-    for event in pygame.event.get():
-        if event.key == K_ESCAPE:
-            terminate("Esc button pushed")
-        else:
-            return None
+def AssembleAndSave(GEOMETRY):
+    cp /home/pi/photobooth_images/*.jpg /home/pi/PB_Originals
+    mogrify -resize "$GEOMETRY" /home/pi/photobooth_images/*.jpg
+    montage /home/pi/photobooth_images/*.jpg -tile 1x4 -geometry +1+1 /home/pi/temp_montage2.jpg
+    montage /home/pi/temp_montage2.jpg /home/pi/photobooth_label.jpg -tile 1x2 -geometry +1+1 /home/pi/temp_montage3.jpg
+    suffix=$(date +%Y%m%d%H%M%S)
+    cp /home/pi/temp_montage3.jpg /home/pi/PB_archive/PB_${suffix}.jpg
+    global lastStrip = /home/pi/PB_archive/PB_${suffix}.jpg #can I do this?
 
-# Slide show needs to be a thread
+
+def PrintStrip(strip):
+    montage strip strip -tile 2x1 -geometry +5+5 /home/pi/temp_print.jpg
+    # lp -d "name of printer here" /home/pi/temp_print.jpg
+
+def RemoveTempFiles():
+    rm /home/pi/photobooth_images/*.jpg
+    rm /home/pi/temp*
+
+def UploadStrip():
+#TODO: find a cloud to upload to
+#TODO: use the API
+
+
 def SlideShow(index):
+    allpics = os.listdir(stripDir)
+    #random.shuffle(allpics)
+    imageCount = len(allpics)
     counter = 0
     global ready
     if index == 0:
@@ -129,28 +148,23 @@ def SlideShow(index):
         stripSlide = allpics[counter]
         DrawStrip("Slide Show", stripDir + allpics[counter])
         time.sleep(3)
-        #update "ready"
         if counter == index:
             counter = 0
         else:
             counter += 1
         
-allpics = os.listdir(stripDir)
-random.shuffle(allpics)
-imageCount = len(allpics)
+
 ready = False
-#creat a thread here
 thread.start_new_thread(SlideShow, (imageCount, ))
 
 while True:
-    
+    #TODO: run this as a thread so we can kill the program at any point?
     if GPIO.input(RESET) == False:
         terminate("Killed by Reset Switch")
     
     if GPIO.input(SWITCH) == False:
         snap = 0
         ready = True
-        # TODO: Work on screen layout
         DrawCenterMessage("Get Ready" ,wid2,high2+100,70)
         for i in range(5):
             GPIO.output(READY_LED, False)
@@ -175,7 +189,7 @@ while True:
             # Takes a photo with connected DSLR
             print("pose number %d" % pose_number)
             GPIO.output(POSE_LED, False)
-            filepath = "/home/pi/photobooth_images/photobooth" + time.strftime("%Y%m%d%H%M%S") + ".jpg" # inject a timestamp into the filename
+            filepath = "/home/pi/photobooth_images/photobooth" + time.strftime("%Y%m%d%H%M%S") + ".jpg"
             gpout = subprocess.check_output("gphoto2 --capture-image-and-download --filename " + filepath, stderr=subprocess.STDOUT, shell=True)
             print(gpout)
 
@@ -183,34 +197,32 @@ while True:
             time.sleep(2)
             if "ERROR" not in gpout:
                 snap += 1
-        # Create photo strip and send it to the printer
-        # TODO: Work on screen layout
         DrawCenterMessage("Assembling" ,wid2,high2+100,100)
         print("Assembling the photo strip")
         
         
         if GPIO.input(PRINT) == True:
             GPIO.output(PRINT_LED, True)
-            subprocess.call("sudo /home/pi/scripts/PhotoBooth/assemble_and_print", shell=True)
             print("Please wait while your photos print...")
-            allpics = os.listdir(stripDir)
-            imageCount = len(allpics)
-            DrawStrip("Printing", stripDir + allpics[imageCount-1])
+            AssembleAndSave(GEOMETRY)
+            print("Photo Saved")
+            DrawStrip("Printing", lastStrip)
+            PrintStrip(lastStrip)
             # TODO: determine amount of time to compile the montage, and if printing the photo how long that will take
             # TODO: check status of printer instead of using this arbitrary wait time
             time.sleep(10)
             GPIO.output(PRINT_LED, False)
             
         else:
-            subprocess.call("sudo /home/pi/scripts/PhotoBooth/assemble_and_save", shell=True)
-            # TODO: display photo strip and printing
             print("Please wait while your photos save...")
-            allpics = os.listdir(stripDir)
-            imageCount = len(allpics)
-            DrawStrip("Saving", stripDir + allpics[imageCount-1])
+            AssembleAndSave(GEOMETRY)
+            print("Photo Saved")
+            DrawStrip("Saving", lastStrip)
             time.sleep(10)
-        
+
+        RemoveTempFiles()
         print("ready for next round")
         GPIO.output(READY_LED, True)
-        random.shuffle(allpics)
         thread.start_new_thread(SlideShow, (imageCount, ))
+
+
