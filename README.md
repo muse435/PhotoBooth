@@ -23,6 +23,8 @@ Inspiration for this project comes from:
 - [X] listen for start button while slide show is going
 - [ ] Fix formatting issues on the screen
 
+- [ ] move location of temporary montage
+- [ ] convert bash to python
 
 # GIOP TODO
 - [X] Install "Print" switch
