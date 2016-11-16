@@ -40,8 +40,8 @@ wid2 = width/2
 high2 = height/2
 poser = ["First Pose", "Second Pose", "Third Pose", "Last Pose!"]
 timerLength = 1
-#GEOMETRY=968x648
-GEOMETRY="484x324"
+# geometry = "968x648"
+geometry = "484x324"
 
 # pygame
 white = pygame.Color(255,255,255)
@@ -117,19 +117,28 @@ def terminate(Terminated):
     pygame.quit()
     sys.exit(Terminated)
 
-def AssembleAndSave(GEOMETRY, printStrip): #TODO: did i do this corectly?
-    global stripDir
-    global snapShotDir
-    global montageDir
+def AssembleAndSave(geometry, printStrip): #TODO: did i do this corectly?
+    global stripDir     # Why did you redeclare all these as global?
+    global snapShotDir  # Is it really neccesary or were you just trying things?
+    global montageDir   # If not, re-test after removing them
     
-    for item in os.listdir(snapShotDir):
-        print(item)
-        shutil.copy2(snapShotDir + item, snapShotArchive)
-    subprocess.call("mogrify -resize " + GEOMETRY + " /home/pi/photobooth_images/*.jpg", shell=True)
+    # copy original single photos to a backup folder
+    src_files = os.listdir(snapShotDir)
+    for item in src_files:
+        full_file_name = os.path.join(snapShotDir, item)
+        print(full_file_name)
+        if (os.path.isfile(full_file_name)):
+            shutil.copy2(full_file_name, snapShotArchive)
+
+    # resize the images for the strip
+    subprocess.call("mogrify -resize " + geometry + " /home/pi/photobooth_images/*.jpg", shell=True)
+    # montage them into a photo strip
     subprocess.call("montage" + snapShotDir + "*.jpg -tile 1x4 -geometry +1+1" + montageDir + "temp_montage2.jpg", shell=True)
     subprocess.call("montage" + montageDir + "temp_montage2.jpg " + stripLabel + " -tile 1x2 -geometry +1+1 " + montageDir + "temp_montage3.jpg", shell=True)
-    suffix= "date +%Y%m%d%H%M%S"
+    # copy the photo strips to a backup folder
+    suffix = time.strftime("%Y%m%d%H%M%S")
     shutil.copyfile(montageDir + "temp_montage3.jpg", stripDir + "PB_" + suffix + ".jpg")
+    # update lastStrip so we display the correct one
     lastStrip = stripDir + "PB_" + suffix + ".jpg"
     if (printStrip):
         subprocess.call("montage" + montageDir + "temp_montage3.jpg montage" + montageDir + "temp_montage3.jpg -tile 2x1 -geometry +5+5 " + montageDir + "temp_montage4.jpg", shell=True)
@@ -216,7 +225,7 @@ while True:
         if GPIO.input(PRINT) == True:
             GPIO.output(PRINT_LED, True)
             print("Please wait while your photos print...")
-            AssembleAndSave(GEOMETRY, True)
+            AssembleAndSave(geometry, True)
             print("Photo Saved")
             DrawStrip("Printing", lastStrip)
             PrintStrip(lastStrip)
@@ -227,7 +236,7 @@ while True:
             
         else:
             print("Please wait while your photos save...")
-            AssembleAndSave(GEOMETRY, False)
+            AssembleAndSave(geometry, False)
             print("Photo Saved")
             DrawStrip("Saving", lastStrip)
             time.sleep(10)

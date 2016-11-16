@@ -5,7 +5,7 @@ Inspiration for this project comes from:
 - https://github.com/safay/RPi_photobooth
 - http://www.instructables.com/id/Raspberry-Pi-photo-booth-controller/
 
-"Super ‘Special’” Thanks to [veswill3](https://github.com/veswill3)
+"Super :sparkles:Special:sparkles:” Thanks to [veswill3](https://github.com/veswill3)
 
 
 # TODO
@@ -24,7 +24,7 @@ Inspiration for this project comes from:
 - [ ] Fix formatting issues on the screen
 
 - [ ] move location of temporary montage
-- [ ] convert bash to python
+- [?] convert bash to python
 
 # GIOP TODO
 - [X] Install "Print" switch
