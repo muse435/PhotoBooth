@@ -27,21 +27,21 @@ GPIO.output(READY_LED, True)
 
 
 # Variables
-global stripDir = "/home/pi/PB_archive/"
-global lastStrip = "/home/pi/Pictures/tempStrip.jpg"
-global ready = False
-global snapShotDir = "/home/pi/photobooth_images/"
-global snapShotArchive = "/home/pi/PB_Originals/"
-global montageDir = "/home/pi/photobooth_montage/"
-global stripLabel = "/home/pi/photobooth_label.jpg"
+stripDir = "/home/pi/photobooth_images/strip_archive/"
+snapShotDir = "/home/pi/photobooth_images/snap/"
+snapShotArchive = "/home/pi/photobooth_images/snap_archive/"
+montageDir = "/home/pi/photobooth_images/montage/"
+lastStrip = "/home/pi/photobooth_images/default/tempStrip.jpg"
+stripLabel = "/home/pi/photobooth_images/default/photobooth_label.jpg"
+ready = False
 width = 768
 height = 1024
 wid2 = width/2
 high2 = height/2
 poser = ["First Pose", "Second Pose", "Third Pose", "Last Pose!"]
-timerLength = 5
+timerLength = 1
 #GEOMETRY=968x648
-GEOMETRY=484x324
+GEOMETRY="484x324"
 
 # pygame
 white = pygame.Color(255,255,255)
@@ -118,8 +118,13 @@ def terminate(Terminated):
     sys.exit(Terminated)
 
 def AssembleAndSave(GEOMETRY, printStrip): #TODO: did i do this corectly?
+    global stripDir
+    global snapShotDir
+    global montageDir
+    
     for item in os.listdir(snapShotDir):
-        shutil.copyfile(item, snapShotArchive)
+        print(item)
+        shutil.copy2(snapShotDir + item, snapShotArchive)
     subprocess.call("mogrify -resize " + GEOMETRY + " /home/pi/photobooth_images/*.jpg", shell=True)
     subprocess.call("montage" + snapShotDir + "*.jpg -tile 1x4 -geometry +1+1" + montageDir + "temp_montage2.jpg", shell=True)
     subprocess.call("montage" + montageDir + "temp_montage2.jpg " + stripLabel + " -tile 1x2 -geometry +1+1 " + montageDir + "temp_montage3.jpg", shell=True)
@@ -137,31 +142,31 @@ def RemoveTempFiles():
     os.remove(montageDir)
 
 def UploadStrip():
-#TODO: find a cloud to upload to
-#TODO: use the API
+    print("Uploading Stip")
+    #TODO: find a cloud to upload to
+    #TODO: use the API
 
 
-def SlideShow(index):
-    allpics = os.listdir(stripDir)
-    random.shuffle(allpics)
-    imageCount = len(allpics)
+def SlideShow():
+    global ready
+    allPics = os.listdir(stripDir)
+    random.shuffle(allPics)
+    imageCount = len(allPics)
     counter = 0
-    if index == 0:
+    if imageCount == 0:
         ready = True
         DrawCenterMessage("Push The Button", wid2, high2, 70)
-    index -= 1
+    imageCount -= 1
     while ready == False:
-        stripSlide = allpics[counter]
-        DrawStrip("Slide Show", stripDir + allpics[counter])
+        stripSlide = allPics[counter]
+        DrawStrip("Slide Show", stripDir + allPics[counter])
         time.sleep(3)
-        if counter == index:
+        if counter == imageCount:
             counter = 0
         else:
             counter += 1
         
-
-ready = False
-thread.start_new_thread(SlideShow, (imageCount, ))
+thread.start_new_thread(SlideShow, ())
 
 while True:
     #TODO: run this as a thread so we can kill the program at any point?
@@ -169,6 +174,7 @@ while True:
         terminate("Killed by Reset Switch")
     
     if GPIO.input(SWITCH) == False:
+        global ready
         snap = 0
         ready = True
         DrawCenterMessage("Get Ready" ,wid2,high2+100,70)
@@ -195,7 +201,7 @@ while True:
             # Takes a photo with connected DSLR
             print("pose number %d" % pose_number)
             GPIO.output(POSE_LED, False)
-            filepath = "/home/pi/photobooth_images/photobooth" + time.strftime("%Y%m%d%H%M%S") + ".jpg"
+            filepath = snapShotDir + time.strftime("%Y%m%d%H%M%S") + ".jpg"
             gpout = subprocess.check_output("gphoto2 --capture-image-and-download --filename " + filepath, stderr=subprocess.STDOUT, shell=True)
             print(gpout)
 
@@ -229,5 +235,5 @@ while True:
         RemoveTempFiles()
         print("ready for next round")
         GPIO.output(READY_LED, True)
-        thread.start_new_thread(SlideShow, (imageCount, ))
+        thread.start_new_thread(SlideShow, ())
 
