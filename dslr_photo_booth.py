@@ -133,8 +133,8 @@ def AssembleAndSave(geometry, printStrip): #TODO: did i do this corectly?
     # resize the images for the strip
     subprocess.call("mogrify -resize " + geometry + " " + snapShotDir + "*.jpg", shell=True)
     # montage them into a photo strip
-    subprocess.call("montage" + snapShotDir + "*.jpg -tile 1x4 -geometry +1+1" + montageDir + "temp_montage2.jpg", shell=True)
-    subprocess.call("montage" + montageDir + "temp_montage2.jpg " + stripLabel + " -tile 1x2 -geometry +1+1 " + montageDir + "temp_montage3.jpg", shell=True)
+    subprocess.call("montage " + snapShotDir + "*.jpg -tile 1x4 -geometry +1+1" + montageDir + "temp_montage2.jpg", shell=True)
+    subprocess.call("montage " + montageDir + "temp_montage2.jpg " + stripLabel + " -tile 1x2 -geometry +1+1 " + montageDir + "temp_montage3.jpg", shell=True)
     # copy the photo strips to a backup folder
     suffix = time.strftime("%Y%m%d%H%M%S")
     shutil.copyfile(montageDir + "temp_montage3.jpg", stripDir + "PB_" + suffix + ".jpg")
