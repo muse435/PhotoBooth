@@ -256,6 +256,7 @@ while True:
             time.sleep(10)
 
         RemoveTempFiles()
+        ready = False
         print("ready for next round")
         GPIO.output(READY_LED, True)
         thread.start_new_thread(SlideShow, ())
