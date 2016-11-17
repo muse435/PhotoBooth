@@ -147,8 +147,19 @@ def AssembleAndSave(geometry, printStrip): #TODO: did i do this corectly?
     RemoveTempFiles()
 
 def RemoveTempFiles():
-    os.remove(snapShotDir)
-    os.remove(montageDir)
+    deleteAllFilesInFolder(snapShotDir)
+    deleteAllFilesInFolder(montageDir)
+
+def deleteAllFilesInFolder(folder):
+    # from http://stackoverflow.com/questions/185936/delete-folder-contents-in-python
+    for the_file in os.listdir(folder):
+        file_path = os.path.join(folder, the_file)
+        try:
+            if os.path.isfile(file_path):
+                os.unlink(file_path)
+            #elif os.path.isdir(file_path): shutil.rmtree(file_path)
+        except Exception as e:
+            print(e)
 
 def UploadStrip():
     print("Uploading Stip")
