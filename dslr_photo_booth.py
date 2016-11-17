@@ -1,7 +1,6 @@
 #!/usr/bin/python
 import RPi.GPIO as GPIO, sys, time, os, subprocess, pygame, thread, shutil, random
 
-
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
@@ -40,10 +39,10 @@ wid2 = width/2
 high2 = height/2
 poser = ["First Pose", "Second Pose", "Third Pose", "Last Pose!"]
 timerLength = 1
-snapGeometrySave = "968x648"
-labelGeometrySave = "968x97"
-snapGeometryPrint = "484x324"
-labelGeometryPrint = "484x49"
+#snapGeometry = "968x648"
+#labelGeometry = "968x97"
+snapGeometry = "484x324"
+labelGeometry = "484x49"
 
 # pygame
 white = pygame.Color(255,255,255)
@@ -119,11 +118,15 @@ def terminate(Terminated):
     pygame.quit()
     sys.exit(Terminated)
 
-def AssembleAndSave(geometry, lableGeo, printStrip): #TODO: did i do this corectly?
+def AssembleAndSave(geometry, lableGeo): #TODO: did i do this corectly?
     global stripDir     # Why did you redeclare all these as global?
     global snapShotDir  # Is it really neccesary or were you just trying things?
     global montageDir   # If not, re-test after removing them
     global lastStrip
+
+    DrawCenterMessage("Assembling" ,wid2,high2+100,100)
+    print("Assembling the photo strip")
+
     # copy original single photos to a backup folder
     src_files = os.listdir(snapShotDir)
     for item in src_files:
@@ -141,12 +144,22 @@ def AssembleAndSave(geometry, lableGeo, printStrip): #TODO: did i do this corect
     # copy the photo strips to a backup folder
     suffix = time.strftime("%Y%m%d%H%M%S")
     shutil.copyfile(montageDir + "temp_montage3.jpg", stripDir + "PB_" + suffix + ".jpg")
+    print("Photo Saved")
     # update lastStrip so we display the correct one
     lastStrip = stripDir + "PB_" + suffix + ".jpg"
-    if (printStrip):
-        subprocess.call("montage" + montageDir + "temp_montage3.jpg montage" + montageDir + "temp_montage3.jpg -tile 2x1 -geometry +5+5 " + montageDir + "temp_montage4.jpg", shell=True)
-        #subprocess.call("lp -d name of printer here " + montageDir + "temp_montage4.jpg", shell=True)
+    if (GPIO.input(PRINT) == True):
+        DrawStrip("Printing", lastStrip)
+        subprocess.call("montage " + montageDir + "temp_montage3.jpg " + montageDir + "temp_montage3.jpg -tile 2x1 -geometry +5+5 " + montageDir + "temp_montage4.jpg", shell=True)
+        GPIO.output(PRINT_LED, True)
         print("photo now printing")
+        #subprocess.call("lp -d name of printer here " + montageDir + "temp_montage4.jpg", shell=True)
+        # TODO: determine amount of time to compile the montage, and if printing the photo how long that will take
+        # TODO: check status of printer instead of using this arbitrary wait time
+        time.sleep(10)
+        GPIO.output(PRINT_LED, False)       
+    else:
+        DrawStrip("Saving", lastStrip)
+        time.sleep(10)
     RemoveTempFiles()
 
 def RemoveTempFiles():
@@ -173,6 +186,7 @@ def UploadStrip():
 def SlideShow():
     print("starting the slideshow")
     global ready
+    
     allPics = os.listdir(stripDir)
     imageCount = len(allPics)    
     random.shuffle(allPics)
@@ -181,9 +195,10 @@ def SlideShow():
         ready = True
         DrawCenterMessage("Push The Button", wid2, high2, 70)
     imageCount -= 1
+    GPIO.output(READY_LED, True)
     while ready == False:
         stripSlide = allPics[counter]
-        DrawStrip("Slide Show", stripDir + allPics[counter])
+        DrawStrip("Ready to Start", stripDir + allPics[counter])
         time.sleep(3)
         if counter == imageCount:
             counter = 0
@@ -199,7 +214,6 @@ while True:
         terminate("Killed by Reset Switch")
     
     if GPIO.input(SWITCH) == False:
-        global ready
         snap = 0
         ready = True
         DrawCenterMessage("Get Ready" ,wid2,high2+100,70)
@@ -211,8 +225,7 @@ while True:
         GPIO.output(READY_LED, False)
     
         while snap < 4:
-            pose_number = snap+1
-        
+            pose_number = snap+1   
             for i in range(timerLength):
                 GPIO.output(POSE_LED, False)
                 time.sleep(0.5)
@@ -229,37 +242,13 @@ while True:
             filepath = snapShotDir + time.strftime("%Y%m%d%H%M%S") + ".jpg"
             gpout = subprocess.check_output("gphoto2 --capture-image-and-download --filename " + filepath, stderr=subprocess.STDOUT, shell=True)
             print(gpout)
-
             DrawPose(snap, filepath)
             time.sleep(2)
             if "ERROR" not in gpout:
                 snap += 1
-        DrawCenterMessage("Assembling" ,wid2,high2+100,100)
-        print("Assembling the photo strip")
         
-        
-        if GPIO.input(PRINT) == True:
-            GPIO.output(PRINT_LED, True)
-            print("Please wait while your photos print...")
-            AssembleAndSave(snapGeometryPrint, labelGeometryPrint, True)
-            print("Photo Saved")
-            DrawStrip("Printing", lastStrip)
-            PrintStrip(lastStrip)
-            # TODO: determine amount of time to compile the montage, and if printing the photo how long that will take
-            # TODO: check status of printer instead of using this arbitrary wait time
-            time.sleep(10)
-            GPIO.output(PRINT_LED, False)
-            
-        else:
-            print("Please wait while your photos save...")
-            AssembleAndSave(snapGeometrySave, labelGeometrySave, False)
-            print("Photo Saved")
-            DrawStrip("Saving", lastStrip)
-            time.sleep(10)
-
-        RemoveTempFiles()
+        AssembleAndSave(snapGeometry, labelGeometry)
         ready = False
         print("ready for next round")
-        GPIO.output(READY_LED, True)
         thread.start_new_thread(SlideShow, ())
-
+        
