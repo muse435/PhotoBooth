@@ -2,36 +2,37 @@ pi@raspberrypi:~/scripts/PhotoBooth $ python /home/pi/scripts/PhotoBooth/dslr_ph
 /home/pi/scripts/PhotoBooth/dslr_photo_booth.py:186: SyntaxWarning: name 'ready' is assigned to before global declaration
   global ready
 pose number 1
-New file is in location /capt0000.jpg on the camera
-Saving file as /home/pi/photobooth_images/snap/20161117093539.jpg
-Deleting file /capt0000.jpg on the camera
+New file is in location /store_00010001/DCIM/100CANON/IMG_9250.JPG on the camera
+Saving file as /home/pi/photobooth_images/snap/20161117095300.jpg
+Deleting file /store_00010001/DCIM/100CANON/IMG_9250.JPG on the camera
 
 pose number 2
 New file is in location /capt0000.jpg on the camera
-Saving file as /home/pi/photobooth_images/snap/20161117093550.jpg
+Saving file as /home/pi/photobooth_images/snap/20161117095311.jpg
 Deleting file /capt0000.jpg on the camera
 
 pose number 3
 New file is in location /capt0000.jpg on the camera
-Saving file as /home/pi/photobooth_images/snap/20161117093602.jpg
+Saving file as /home/pi/photobooth_images/snap/20161117095322.jpg
 Deleting file /capt0000.jpg on the camera
 
 pose number 4
 New file is in location /capt0000.jpg on the camera
-Saving file as /home/pi/photobooth_images/snap/20161117093613.jpg
+Saving file as /home/pi/photobooth_images/snap/20161117095333.jpg
 Deleting file /capt0000.jpg on the camera
 
 Assembling the photo strip
 Please wait while your photos save...
-/home/pi/photobooth_images/snap/20161117092613.jpg
+/home/pi/photobooth_images/snap/20161117095322.jpg
+/home/pi/photobooth_images/snap/20161117095300.jpg
+/home/pi/photobooth_images/snap/20161117095333.jpg
+/home/pi/photobooth_images/snap/20161117095311.jpg
 Traceback (most recent call last):
   File "/home/pi/scripts/PhotoBooth/dslr_photo_booth.py", line 239, in <module>
     AssembleAndSave(geometry, False)
-  File "/home/pi/scripts/PhotoBooth/dslr_photo_booth.py", line 131, in AssembleAndSave
-    shutil.copy2(full_file_name, snapShotArchive)
-  File "/usr/lib/python2.7/shutil.py", line 130, in copy2
-    copyfile(src, dst)
-  File "/usr/lib/python2.7/shutil.py", line 83, in copyfile
-    with open(dst, 'wb') as fdst:
-IOError: [Errno 13] Permission denied: '/home/pi/photobooth_images/snap_archive/20161117092613.jpg'
-pi@raspberrypi:~/scripts/PhotoBooth $ 
+  File "/home/pi/scripts/PhotoBooth/dslr_photo_booth.py", line 147, in AssembleAndSave
+    RemoveTempFiles()
+  File "/home/pi/scripts/PhotoBooth/dslr_photo_booth.py", line 150, in RemoveTempFiles
+    os.remove(snapShotDir)
+OSError: [Errno 21] Is a directory: '/home/pi/photobooth_images/snap/'
+pi@raspberrypi:~/scripts/PhotoBooth $
