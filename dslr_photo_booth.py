@@ -131,7 +131,7 @@ def AssembleAndSave(geometry, printStrip): #TODO: did i do this corectly?
             shutil.copy2(full_file_name, snapShotArchive)
 
     # resize the images for the strip
-    subprocess.call("mogrify -resize " + geometry + " /home/pi/photobooth_images/*.jpg", shell=True)
+    subprocess.call("mogrify -resize " + geometry + " " + snapShotDir + "*.jpg", shell=True)
     # montage them into a photo strip
     subprocess.call("montage" + snapShotDir + "*.jpg -tile 1x4 -geometry +1+1" + montageDir + "temp_montage2.jpg", shell=True)
     subprocess.call("montage" + montageDir + "temp_montage2.jpg " + stripLabel + " -tile 1x2 -geometry +1+1 " + montageDir + "temp_montage3.jpg", shell=True)
