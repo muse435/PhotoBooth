@@ -40,8 +40,10 @@ wid2 = width/2
 high2 = height/2
 poser = ["First Pose", "Second Pose", "Third Pose", "Last Pose!"]
 timerLength = 1
-# geometry = "968x648"
-geometry = "484x324"
+snapGeometrySave = "968x648"
+labelGeometrySave = "968x97"
+snapGeometryPrint = "484x324"
+labelGeometryPrint = "484x49"
 
 # pygame
 white = pygame.Color(255,255,255)
@@ -117,12 +119,11 @@ def terminate(Terminated):
     pygame.quit()
     sys.exit(Terminated)
 
-def AssembleAndSave(geometry, printStrip): #TODO: did i do this corectly?
+def AssembleAndSave(geometry, lableGeo, printStrip): #TODO: did i do this corectly?
     global stripDir     # Why did you redeclare all these as global?
     global snapShotDir  # Is it really neccesary or were you just trying things?
     global montageDir   # If not, re-test after removing them
     global lastStrip
-    
     # copy original single photos to a backup folder
     src_files = os.listdir(snapShotDir)
     for item in src_files:
@@ -133,6 +134,7 @@ def AssembleAndSave(geometry, printStrip): #TODO: did i do this corectly?
 
     # resize the images for the strip
     subprocess.call("mogrify -resize " + geometry + " " + snapShotDir + "*.jpg", shell=True)
+    subprocess.call("mogrify -resize " + lableGeo + " " + stripLabel, shell=True)
     # montage them into a photo strip
     subprocess.call("montage " + snapShotDir + "*.jpg -tile 1x4 -geometry +1+1 " + montageDir + "temp_montage2.jpg", shell=True)
     subprocess.call("montage " + montageDir + "temp_montage2.jpg " + stripLabel + " -tile 1x2 -geometry +1+1 " + montageDir + "temp_montage3.jpg", shell=True)
@@ -172,8 +174,8 @@ def SlideShow():
     print("starting the slideshow")
     global ready
     allPics = os.listdir(stripDir)
+    imageCount = len(allPics)    
     random.shuffle(allPics)
-    imageCount = len(allPics)
     counter = 0
     if imageCount == 0:
         ready = True
@@ -182,10 +184,10 @@ def SlideShow():
     while ready == False:
         stripSlide = allPics[counter]
         DrawStrip("Slide Show", stripDir + allPics[counter])
-        print("Slide Show - showing: " + stripDir + allPics[counter])
         time.sleep(3)
         if counter == imageCount:
             counter = 0
+            random.shuffle(allPics)
         else:
             counter += 1
         
@@ -239,7 +241,7 @@ while True:
         if GPIO.input(PRINT) == True:
             GPIO.output(PRINT_LED, True)
             print("Please wait while your photos print...")
-            AssembleAndSave(geometry, True)
+            AssembleAndSave(snapGeometryPrint, labelGeometryPrint, True)
             print("Photo Saved")
             DrawStrip("Printing", lastStrip)
             PrintStrip(lastStrip)
@@ -250,7 +252,7 @@ while True:
             
         else:
             print("Please wait while your photos save...")
-            AssembleAndSave(geometry, False)
+            AssembleAndSave(snapGeometrySave, labelGeometrySave, False)
             print("Photo Saved")
             DrawStrip("Saving", lastStrip)
             time.sleep(10)

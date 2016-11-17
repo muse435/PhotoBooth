@@ -14,14 +14,15 @@ Inspiration for this project comes from:
 - [ ] Specify project dependencies - [example](http://stackoverflow.com/questions/25559157/how-to-handle-python-dependencies-throughout-the-project)
 - [ ] slide show (random) of strips while waiting for the next person.
 - [ ] Remove "global" variables
+- [X] Fix randomize slide show
 
 
 # TODO - GUI
-- [ ] Fix formatting of Count Down
+- [ ] Clear slide show when button is pushed
 - [ ] Fix formatting of last photo taken
 - [ ] Fix formatting issues on the screen
-- [ ] fix strip assemble w/tag
-- [ ] update tag
+- [X] fix strip assemble w/tag
+- [X] update tag
 
 # TODO - GIOP 
 - [ ] Install external storage device (SD Card)
