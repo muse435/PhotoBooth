@@ -170,6 +170,7 @@ def UploadStrip():
 
 def SlideShow():
     global ready
+    print("Starting Slide Show")
     allPics = os.listdir(stripDir)
     random.shuffle(allPics)
     imageCount = len(allPics)
@@ -181,6 +182,7 @@ def SlideShow():
     while ready == False:
         stripSlide = allPics[counter]
         DrawStrip("Slide Show", stripDir + allPics[counter])
+        print("Slide Show - showing: " + stripDir + allPics[counter])
         time.sleep(3)
         if counter == imageCount:
             counter = 0
