@@ -19,6 +19,8 @@ Inspiration for this project comes from:
 
 # TODO - GUI
 - [ ] Clear slide show when button is pushed
+- [ ] move "snap" left slightly
+- [ ] change "Slide Show" to "Push Start"
 - [ ] Fix formatting of last photo taken
 - [ ] Fix formatting issues on the screen
 - [X] fix strip assemble w/tag
