@@ -121,6 +121,7 @@ def AssembleAndSave(geometry, printStrip): #TODO: did i do this corectly?
     global stripDir     # Why did you redeclare all these as global?
     global snapShotDir  # Is it really neccesary or were you just trying things?
     global montageDir   # If not, re-test after removing them
+    global lastStrip
     
     # copy original single photos to a backup folder
     src_files = os.listdir(snapShotDir)
