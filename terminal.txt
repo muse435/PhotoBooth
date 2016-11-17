@@ -39,3 +39,4 @@ Traceback (most recent call last):
     with open(src, 'rb') as fsrc:
 IOError: [Errno 2] No such file or directory: '/home/pi/photobooth_images/montage/temp_montage3.jpg'
 
+testing my .ssh
