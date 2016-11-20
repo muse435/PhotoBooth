@@ -169,17 +169,16 @@ def UploadStrip():
 
 def SlideShow():
     print("starting the slideshow")
-    global ready
     
     allPics = os.listdir(stripDir)
     imageCount = len(allPics)    
     random.shuffle(allPics)
     counter = 0
-    if imageCount == 0:
-        ready = True
-        DrawCenterMessage("Push The Button", 10, 650, 122)
-    imageCount -= 1
     GPIO.output(READY_LED, True)
+    if imageCount == 0:
+        DrawCenterMessage("Push The Button", 10, 650, 122)
+        return
+    imageCount -= 1
     while ready == False:
         stripSlide = allPics[counter]
         DrawStrip("Ready to Start", stripDir + allPics[counter])
