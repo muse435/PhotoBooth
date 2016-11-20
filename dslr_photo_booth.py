@@ -167,7 +167,7 @@ def UploadStrip():
     #TODO: use the API
 
 
-def SlideShow(stripDir):
+def SlideShow():
     print("starting the slideshow")
     global ready
     
@@ -190,7 +190,7 @@ def SlideShow(stripDir):
         else:
             counter += 1
         
-thread.start_new_thread(SlideShow, (stripDir))
+thread.start_new_thread(SlideShow, ())
 
 while True:
     #TODO: run this as a thread so we can kill the program at any point?
@@ -233,5 +233,5 @@ while True:
         AssembleAndSave(snapGeometry, labelGeometry)
         ready = False
         print("ready for next round")
-        thread.start_new_thread(SlideShow, (stripDir))
+        thread.start_new_thread(SlideShow, ())
         
