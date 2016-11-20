@@ -108,11 +108,6 @@ def terminate(Terminated):
     sys.exit(Terminated)
 
 def AssembleAndSave(geometry, lableGeo): #TODO: did i do this corectly?
-    global stripDir     # Why did you redeclare all these as global?
-    global snapShotDir  # Is it really neccesary or were you just trying things?
-    global montageDir   # If not, re-test after removing them
-    global lastStrip
-
     DrawCenterMessage("Assembling Strip" ,10 ,620, 120)
     print("Assembling the photo strip")
 
@@ -172,7 +167,7 @@ def UploadStrip():
     #TODO: use the API
 
 
-def SlideShow():
+def SlideShow(stripDir):
     print("starting the slideshow")
     global ready
     
@@ -195,7 +190,7 @@ def SlideShow():
         else:
             counter += 1
         
-thread.start_new_thread(SlideShow, ())
+thread.start_new_thread(SlideShow, (stripDir))
 
 while True:
     #TODO: run this as a thread so we can kill the program at any point?
@@ -238,5 +233,5 @@ while True:
         AssembleAndSave(snapGeometry, labelGeometry)
         ready = False
         print("ready for next round")
-        thread.start_new_thread(SlideShow, ())
+        thread.start_new_thread(SlideShow, (stripDir))
         
